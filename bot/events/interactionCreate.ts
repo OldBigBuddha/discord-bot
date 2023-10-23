@@ -10,7 +10,7 @@ const logger = eventLogger.getSubLogger({ name: "interactionCreate" });
 const commandMap: Map<string, SlashCommand> = new Map(
   slashCommands.map((c) => {
     return [c.name, c];
-  })
+  }),
 );
 
 export const interactionCreate: EventHandlers["interactionCreate"] =

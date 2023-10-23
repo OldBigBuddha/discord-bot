@@ -1,6 +1,7 @@
 import {
   ApplicationCommandOptionTypes,
   Embed,
+  Interaction,
   InteractionResponseTypes,
   Member,
 } from "@discordeno";
@@ -10,6 +11,7 @@ import { BOT } from "../../bot.ts";
 import { SlashCommand } from "../type.ts";
 import { commandLogger } from "../logger.ts";
 import { sendCustomInteractionErrorResponse } from "../../helpers/errorResponse.ts";
+import { commandOptionsParser } from "../commandOptionsParser.ts";
 
 const KEY_NICE = "nice_key" as const;
 const EMBED_COLOR_CODE = 0xff8000 as const;
@@ -42,23 +44,30 @@ function getUsername(member: Member): string {
   return member.nick ?? member.user?.username ?? String(member.id);
 }
 
-const execute: SlashCommand["execute"] = async (interaction) => {
-  logger.debug(interaction);
-  // validation
-  const options = interaction.data?.options;
-  if (options == null) {
-    logger.error({ message: "'options' is undefined", data: interaction.data });
-    return await sendCustomInteractionErrorResponse(interaction);
-  }
+async function executeHelp(interaction: Interaction) {
+  return await BOT.helpers.sendInteractionResponse(
+    interaction.id,
+    interaction.token,
+    {
+      type: InteractionResponseTypes.ChannelMessageWithSource,
+      data: {
+        content: "これは help です。",
+      },
+    },
+  );
+}
 
-  const target = options[0].value;
-  if (target == null || typeof target !== "string") {
-    logger.error({ message: "passed option is not string", options: options });
+type KudosArgs = {
+  userId: string;
+};
+async function executeKudos(interaction: Interaction, args: KudosArgs) {
+  if (args == null) {
+    logger.error({ message: "No arg passed" });
     return await sendCustomInteractionErrorResponse(interaction);
   }
 
   try {
-    const member = await BOT.helpers.getMember(Secret.GUILD_ID, target);
+    const member = await BOT.helpers.getMember(Secret.GUILD_ID, args.userId);
     const entry = await findEntry<number>([member.id.toString(10)]);
     const newPoint = entry?.value != null ? entry.value + 1 : 1;
     await setEntry([member.id], newPoint);
@@ -77,20 +86,62 @@ const execute: SlashCommand["execute"] = async (interaction) => {
     logger.error({ message: "failed to calculate nice point", error: e });
     return await sendCustomInteractionErrorResponse(interaction);
   }
+}
+
+const execute: SlashCommand["execute"] = async (interaction) => {
+  const args = commandOptionsParser(interaction);
+
+  if (args.help != null) {
+    return await executeHelp(interaction);
+  }
+
+  if (args.kudos != null) {
+    const userId = args.kudos.user?.user?.id;
+    if (typeof userId !== "bigint") {
+      logger.error({
+        message: "Args for kudos command are invalid",
+        data: args,
+      });
+      return await sendCustomInteractionErrorResponse(interaction);
+    }
+
+    return await executeKudos(interaction, { userId: userId.toString(10) });
+  }
+
+  logger.warn({
+    message: "requested non-existance command",
+    interaction: interaction,
+  });
+  return sendCustomInteractionErrorResponse(
+    interaction,
+    "未登録のコマンドです",
+  );
 };
 
 export const command: SlashCommand = {
   name: "nice",
   description: "Nice!",
-  options: [{
-    type: ApplicationCommandOptionTypes.User,
-    name: "target",
-    description: "Nice person",
-    required: true,
-    nameLocalizations: {
-      ja: "対象者",
+  options: [
+    {
+      type: ApplicationCommandOptionTypes.SubCommand,
+      name: "kudos",
+      description: "Kudos to your friend!",
+      required: false,
+      options: [
+        {
+          type: ApplicationCommandOptionTypes.User,
+          name: "user",
+          description: "target",
+          required: true,
+        },
+      ],
     },
-  }],
+    {
+      type: ApplicationCommandOptionTypes.SubCommand,
+      name: "help",
+      description: "Usage for nice command",
+      required: false,
+    },
+  ],
   execute: execute,
 };
-
