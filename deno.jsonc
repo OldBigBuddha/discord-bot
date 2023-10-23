@@ -8,6 +8,7 @@
     "@discordeno": "https://deno.land/x/discordeno@18.0.0/mod.ts",
     "dotenv": "https://deno.land/std@0.204.0/dotenv/mod.ts",
     // Path alias
-    "@utils/secret": "./utils/secret.ts"
+    "@utils/secret": "./utils/secret.ts",
+    "@storage/kv": "./storage/kv.ts"
   }
 }

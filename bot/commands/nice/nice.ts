@@ -4,10 +4,8 @@ import {
   InteractionResponseTypes,
 } from "@discordeno";
 import { Secret } from "@utils/secret";
+import { kv } from "@storage/kv";
 import { RunCommand } from "../type.ts";
-
-// TODO: どっかに移す
-const kv = await Deno.openKv();
 
 export const commandInfo: CreateSlashApplicationCommand = {
   name: "nice",
