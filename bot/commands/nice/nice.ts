@@ -1,13 +1,16 @@
 import {
   ApplicationCommandOptionTypes,
   CreateSlashApplicationCommand,
+  Embed,
   InteractionResponseTypes,
+  Member,
 } from "@discordeno";
 import { Secret } from "@utils/secret";
 import { kv } from "@storage/kv";
 import { RunCommand } from "../type.ts";
 
 const KEY_NICE = "nice_key" as const;
+const EMBED_COLOR_CODE = 0xff8000 as const;
 
 export const commandInfo: CreateSlashApplicationCommand = {
   name: "nice",
@@ -36,6 +39,19 @@ async function setEntry(
   return await kv.set([KEY_NICE, ...keys], value);
 }
 
+function generateEmbed(username: string, point: number): Embed {
+  return {
+    title: "Nice work!",
+    description:
+      `${username} の nice point が ${point} になりました、やったね！`,
+    color: EMBED_COLOR_CODE,
+  };
+}
+
+function getUsername(member: Member): string {
+  return member.nick ?? member.user?.username ?? String(member.id);
+}
+
 export const runCommand: RunCommand = async (bot, interaction) => {
   // validation
   const options = interaction.data?.options;
@@ -55,9 +71,7 @@ export const runCommand: RunCommand = async (bot, interaction) => {
   await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
     type: InteractionResponseTypes.ChannelMessageWithSource,
     data: {
-      content: `Nice! ${
-        member.nick ?? member.user?.username
-      }\ncurrent point: ${newPoint}`,
+      embeds: [generateEmbed(getUsername(member), newPoint)],
     },
   });
 };
