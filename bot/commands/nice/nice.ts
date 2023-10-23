@@ -64,7 +64,7 @@ export const runCommand: RunCommand = async (bot, interaction) => {
   }
 
   const member = await bot.helpers.getMember(Secret.GUILD_ID, target);
-  const entry = await findEntry<number>([member.id]);
+  const entry = await findEntry<number>([member.id.toString(10)]);
   const newPoint = entry?.value != null ? entry.value + 1 : 1;
   await setEntry([member.id], newPoint);
 
