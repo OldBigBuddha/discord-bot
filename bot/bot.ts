@@ -1,6 +1,6 @@
 import { createBot } from "@discordeno";
 
-import { Secret } from "../secret.ts";
+import { Secret } from "@utils/secret";
 
 import { slashCommandsInfo } from "./commands/index.ts";
 import { events } from "./events/index.ts";

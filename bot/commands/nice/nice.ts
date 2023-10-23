@@ -3,7 +3,7 @@ import {
   CreateSlashApplicationCommand,
   InteractionResponseTypes,
 } from "@discordeno";
-import { Secret } from "../../../secret.ts";
+import { Secret } from "@utils/secret";
 import { RunCommand } from "../type.ts";
 
 // TODO: どっかに移す
