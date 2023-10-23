@@ -1,12 +1,9 @@
 import { Logger } from "tslog";
 
-const DENO_ENV = Deno.env.get("DENO_ENV");
-
-function isProduction(): boolean {
-  return DENO_ENV === "production";
-}
+import { isProduction } from "@utils/env";
 
 function calcMinLevel(): number {
+  // https://tslog.js.org/#/?id=default-log-level
   if (isProduction()) {
     return 3; // info
   }

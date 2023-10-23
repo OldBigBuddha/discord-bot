@@ -10,6 +10,7 @@
     "tslog": "npm:tslog@4.9.2",
     // Path alias
     "@utils/secret": "./utils/secret.ts",
+    "@utils/env": "./utils/env.ts",
     "@storage/kv": "./storage/kv.ts"
   }
 }
