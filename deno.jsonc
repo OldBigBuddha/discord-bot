@@ -1,8 +1,8 @@
 {
   "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
   "tasks": {
-    "start": "deno run --allow-env=DISCORD_TOKEN,GUILD_ID --allow-read --allow-net --allow-sys=hostname --unstable ./main.ts",
-    "dev": "deno run --unstable --allow-env=DISCORD_TOKEN,GUILD_ID --allow-read --allow-net --allow-sys=hostname --watch ./main.ts"
+    "start": "deno run --allow-env=DENO_ENV,DISCORD_TOKEN,GUILD_ID --allow-read --allow-net --allow-sys=hostname --unstable ./main.ts",
+    "dev": "deno run --unstable --allow-env=DENO_ENV,DISCORD_TOKEN,GUILD_ID --allow-read --allow-net --allow-sys=hostname --watch ./main.ts"
   },
   "imports": {
     "@discordeno": "https://deno.land/x/discordeno@18.0.0/mod.ts",
