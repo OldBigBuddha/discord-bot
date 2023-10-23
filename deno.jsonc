@@ -1,12 +1,13 @@
 {
   "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
   "tasks": {
-    "start": "deno run --allow-env=DISCORD_TOKEN,GUILD_ID --allow-read --allow-net --unstable ./main.ts",
-    "dev": "deno run --unstable --allow-env=DISCORD_TOKEN,GUILD_ID --allow-read --allow-net --watch ./main.ts"
+    "start": "deno run --allow-env=DISCORD_TOKEN,GUILD_ID --allow-read --allow-net --allow-sys=hostname --unstable ./main.ts",
+    "dev": "deno run --unstable --allow-env=DISCORD_TOKEN,GUILD_ID --allow-read --allow-net --allow-sys=hostname --watch ./main.ts"
   },
   "imports": {
     "@discordeno": "https://deno.land/x/discordeno@18.0.0/mod.ts",
     "dotenv": "https://deno.land/std@0.204.0/dotenv/mod.ts",
+    "tslog": "npm:tslog@4.9.2",
     // Path alias
     "@utils/secret": "./utils/secret.ts",
     "@storage/kv": "./storage/kv.ts"

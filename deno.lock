@@ -1,5 +1,16 @@
 {
   "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:tslog@4.9.2": "npm:tslog@4.9.2"
+    },
+    "npm": {
+      "tslog@4.9.2": {
+        "integrity": "sha512-wBM+LRJoNl34Bdu8mYEFxpvmOUedpNUwMNQB/NcuPIZKwdDde6xLHUev3bBjXQU7gdurX++X/YE7gLH8eXYsiQ==",
+        "dependencies": {}
+      }
+    }
+  },
   "remote": {
     "https://deno.land/std@0.204.0/dotenv/mod.ts": "1da8c6d0e7f7d8a5c2b19400b763bc11739df24acec235dda7ea2cfd3d300057",
     "https://deno.land/x/discordeno@18.0.0/bot.ts": "b6c4f1c966f1a968186921619b6e5ebfec7c5eb0dc2e49a66d2c86b37cb2acc7",

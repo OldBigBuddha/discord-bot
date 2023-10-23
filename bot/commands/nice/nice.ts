@@ -8,9 +8,13 @@ import {
 import { Secret } from "@utils/secret";
 import { kv } from "@storage/kv";
 import { RunCommand } from "../type.ts";
+import { commandLogger } from "../logger.ts";
+
 
 const KEY_NICE = "nice_key" as const;
 const EMBED_COLOR_CODE = 0xff8000 as const;
+
+export const niceLogger = commandLogger.getSubLogger({ name: "nice" });
 
 export const commandInfo: CreateSlashApplicationCommand = {
   name: "nice",
@@ -56,11 +60,15 @@ export const runCommand: RunCommand = async (bot, interaction) => {
   // validation
   const options = interaction.data?.options;
   if (options == null) {
-    throw Error("invalid request");
+    const e = new Error("invalid request");
+    niceLogger.error({ error: e });
+    throw e;
   }
   const target = options[0].value;
   if (target == null || typeof target !== "string") {
-    throw Error("no user passed");
+    const e = new Error("no user passed");
+    niceLogger.error({ error: e, target: target });
+    throw e;
   }
 
   const member = await bot.helpers.getMember(Secret.GUILD_ID, target);

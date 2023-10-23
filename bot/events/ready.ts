@@ -1,6 +1,12 @@
 import { EventHandlers } from "@discordeno";
 
-// deno-lint-ignore require-await
-export const ready: EventHandlers["ready"] = async function (_bot, payload) {
-  console.log(`[READY]${payload.user.username} is ready.`);
+import { eventLogger } from "./logger.ts";
+
+const logger = eventLogger.getSubLogger({ name: "ready" });
+
+export const ready: EventHandlers["ready"] = function (_bot, payload) {
+  logger.info({
+    eventType: "ready",
+    message: `${payload.user.username} is ready.`,
+  });
 };
