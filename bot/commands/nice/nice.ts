@@ -68,9 +68,14 @@ async function executeKudos(interaction: Interaction, args: KudosArgs) {
 
   try {
     const member = await BOT.helpers.getMember(Secret.GUILD_ID, args.userId);
-    const entry = await findEntry<number>([member.id.toString(10)]);
+
+    // args.userId でも良いけど API から取れた情報を信用する
+    const memberId = member.id.toString(10);
+
+    const entry = await findEntry<number>([memberId]);
     const newPoint = entry?.value != null ? entry.value + 1 : 1;
-    await setEntry([member.id], newPoint);
+
+    await setEntry([memberId], newPoint);
 
     return await BOT.helpers.sendInteractionResponse(
       interaction.id,
