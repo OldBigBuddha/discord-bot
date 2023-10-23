@@ -1,6 +1,6 @@
 import * as dotenv from "dotenv";
 
-await dotenv.loadSync({
+await dotenv.load({
   envPath: ".env.local",
   export: true,
 });
