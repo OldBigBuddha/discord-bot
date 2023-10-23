@@ -1,13 +1,13 @@
 import {
   ApplicationCommandOptionTypes,
-  CreateSlashApplicationCommand,
   Embed,
   InteractionResponseTypes,
   Member,
 } from "@discordeno";
 import { Secret } from "@utils/secret";
 import { kv } from "@storage/kv";
-import { RunCommand } from "../type.ts";
+import { BOT } from "../../bot.ts";
+import { SlashCommand } from "../type.ts";
 import { commandLogger } from "../logger.ts";
 import { sendCustomInteractionErrorResponse } from "../../helpers/errorResponse.ts";
 
@@ -15,20 +15,6 @@ const KEY_NICE = "nice_key" as const;
 const EMBED_COLOR_CODE = 0xff8000 as const;
 
 const logger = commandLogger.getSubLogger({ name: "nice" });
-
-export const commandInfo: CreateSlashApplicationCommand = {
-  name: "nice",
-  description: "Nice!",
-  options: [{
-    type: ApplicationCommandOptionTypes.User,
-    name: "target",
-    description: "Nice person",
-    required: true,
-    nameLocalizations: {
-      ja: "対象者",
-    },
-  }],
-};
 
 async function findEntry<T>(
   keys: Deno.KvKeyPart[],
@@ -56,27 +42,28 @@ function getUsername(member: Member): string {
   return member.nick ?? member.user?.username ?? String(member.id);
 }
 
-export const runCommand: RunCommand = async (bot, interaction) => {
+const execute: SlashCommand["execute"] = async (interaction) => {
+  logger.debug(interaction);
   // validation
   const options = interaction.data?.options;
   if (options == null) {
     logger.error({ message: "'options' is undefined", data: interaction.data });
-    return await sendCustomInteractionErrorResponse(bot, interaction);
+    return await sendCustomInteractionErrorResponse(interaction);
   }
 
   const target = options[0].value;
   if (target == null || typeof target !== "string") {
     logger.error({ message: "passed option is not string", options: options });
-    return await sendCustomInteractionErrorResponse(bot, interaction);
+    return await sendCustomInteractionErrorResponse(interaction);
   }
 
   try {
-    const member = await bot.helpers.getMember(Secret.GUILD_ID, target);
+    const member = await BOT.helpers.getMember(Secret.GUILD_ID, target);
     const entry = await findEntry<number>([member.id.toString(10)]);
     const newPoint = entry?.value != null ? entry.value + 1 : 1;
     await setEntry([member.id], newPoint);
 
-    return await bot.helpers.sendInteractionResponse(
+    return await BOT.helpers.sendInteractionResponse(
       interaction.id,
       interaction.token,
       {
@@ -88,6 +75,22 @@ export const runCommand: RunCommand = async (bot, interaction) => {
     );
   } catch (e) {
     logger.error({ message: "failed to calculate nice point", error: e });
-    return await sendCustomInteractionErrorResponse(bot, interaction);
+    return await sendCustomInteractionErrorResponse(interaction);
   }
 };
+
+export const command: SlashCommand = {
+  name: "nice",
+  description: "Nice!",
+  options: [{
+    type: ApplicationCommandOptionTypes.User,
+    name: "target",
+    description: "Nice person",
+    required: true,
+    nameLocalizations: {
+      ja: "対象者",
+    },
+  }],
+  execute: execute,
+};
+

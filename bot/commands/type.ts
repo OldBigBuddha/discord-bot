@@ -1,3 +1,7 @@
-import { Bot, Interaction } from "@discordeno";
+import { CreateSlashApplicationCommand, Interaction } from "@discordeno";
 
-export type RunCommand = (bot: Bot, interaction: Interaction) => Promise<void>;
+export type RunCommand = (interaction: Interaction) => Promise<void>;
+
+export interface SlashCommand extends CreateSlashApplicationCommand {
+    execute(interactioin: Interaction): Promise<unknown>;
+}

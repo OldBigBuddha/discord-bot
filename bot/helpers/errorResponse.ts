@@ -1,4 +1,6 @@
-import { Bot, Embed, Interaction, InteractionResponseTypes } from "@discordeno";
+import { Embed, Interaction, InteractionResponseTypes } from "@discordeno";
+
+import { BOT } from "../bot.ts";
 
 const ERROR_COLOR_CODE = 0xbe0000 as const;
 
@@ -11,11 +13,10 @@ function generateErrorEmbed(message?: string): Embed {
 }
 
 export async function sendCustomInteractionErrorResponse(
-  bot: Bot,
   interaction: Interaction,
   message?: string,
 ) {
-  await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
+  await BOT.helpers.sendInteractionResponse(interaction.id, interaction.token, {
     type: InteractionResponseTypes.ChannelMessageWithSource,
     data: {
       embeds: [generateErrorEmbed(message)],
