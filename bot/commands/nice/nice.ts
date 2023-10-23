@@ -4,8 +4,8 @@ import {
   Interaction,
   InteractionResponseTypes,
   Member,
+  User,
 } from "@discordeno";
-import { Secret } from "@utils/secret";
 import { kv } from "@storage/kv";
 import { BOT } from "../../bot.ts";
 import { SlashCommand } from "../type.ts";
@@ -40,38 +40,18 @@ function generateEmbed(username: string, point: number): Embed {
   };
 }
 
-function getUsername(member: Member): string {
-  return member.nick ?? member.user?.username ?? String(member.id);
+function getName(member: Member, user: User): string {
+  return member.nick ?? user.username ?? member.id.toString(10);
 }
 
-async function executeHelp(interaction: Interaction) {
-  return await BOT.helpers.sendInteractionResponse(
-    interaction.id,
-    interaction.token,
-    {
-      type: InteractionResponseTypes.ChannelMessageWithSource,
-      data: {
-        content: "これは help です。",
-      },
-    },
-  );
-}
-
+// 指しているユーザーは同じだが、得られる情報が違う
 type KudosArgs = {
-  userId: string;
+  member: Member;
+  user: User;
 };
-async function executeKudos(interaction: Interaction, args: KudosArgs) {
-  if (args == null) {
-    logger.error({ message: "No arg passed" });
-    return await sendCustomInteractionErrorResponse(interaction);
-  }
-
+async function executeKudos(interaction: Interaction, { user, member }: KudosArgs) {
   try {
-    const member = await BOT.helpers.getMember(Secret.GUILD_ID, args.userId);
-
-    // args.userId でも良いけど API から取れた情報を信用する
     const memberId = member.id.toString(10);
-
     const entry = await findEntry<number>([memberId]);
     const newPoint = entry?.value != null ? entry.value + 1 : 1;
 
@@ -83,7 +63,7 @@ async function executeKudos(interaction: Interaction, args: KudosArgs) {
       {
         type: InteractionResponseTypes.ChannelMessageWithSource,
         data: {
-          embeds: [generateEmbed(getUsername(member), newPoint)],
+          embeds: [generateEmbed(getName(member, user), newPoint)],
         },
       },
     );
@@ -96,21 +76,11 @@ async function executeKudos(interaction: Interaction, args: KudosArgs) {
 const execute: SlashCommand["execute"] = async (interaction) => {
   const args = commandOptionsParser(interaction);
 
-  if (args.help != null) {
-    return await executeHelp(interaction);
-  }
-
-  if (args.kudos != null) {
-    const userId = args.kudos.user?.user?.id;
-    if (typeof userId !== "bigint") {
-      logger.error({
-        message: "Args for kudos command are invalid",
-        data: args,
-      });
-      return await sendCustomInteractionErrorResponse(interaction);
-    }
-
-    return await executeKudos(interaction, { userId: userId.toString(10) });
+  if (args.target != null) {
+    return await executeKudos(interaction, {
+      member: args.target.member,
+      user: args.target.user
+    });
   }
 
   logger.warn({
@@ -128,25 +98,11 @@ export const command: SlashCommand = {
   description: "Nice!",
   options: [
     {
-      type: ApplicationCommandOptionTypes.SubCommand,
-      name: "kudos",
-      description: "Kudos to your friend!",
-      required: false,
-      options: [
-        {
-          type: ApplicationCommandOptionTypes.User,
-          name: "user",
-          description: "target",
-          required: true,
-        },
-      ],
-    },
-    {
-      type: ApplicationCommandOptionTypes.SubCommand,
-      name: "help",
-      description: "Usage for nice command",
-      required: false,
-    },
+      type: ApplicationCommandOptionTypes.User,
+      name: "target",
+      description: "Kudos to who?",
+      required: true,
+    }
   ],
   execute: execute,
 };
