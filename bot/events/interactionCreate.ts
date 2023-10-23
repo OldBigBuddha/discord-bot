@@ -2,34 +2,32 @@ import { EventHandlers } from "@discordeno";
 
 import { runCommandMap } from "../commands/index.ts";
 import { eventLogger } from "./logger.ts";
+import { sendCustomInteractionErrorResponse } from "../helpers/errorResponse.ts";
 
 const logger = eventLogger.getSubLogger({ name: "interactionCreate" });
 
 export const interactionCreate: EventHandlers["interactionCreate"] =
   async function (bot, interaction) {
     if (interaction.data == null) {
-      const e = new Error("No data in interactioin request");
       logger.error({
         eventType: "interactionCreate",
-        error: e,
+        message: "No data in interactioin request",
         interaction: interaction,
       });
-      throw e;
+      return await sendCustomInteractionErrorResponse(bot, interaction);
     }
 
     const commandName = interaction.data.name;
     const runCommand = runCommandMap.get(commandName);
 
     if (runCommand == null) {
-      // 存在しないコマンド
-      const e = new Error("non-existent command request");
       logger.error({
         eventType: "interactionCreate",
-        error: e,
+        message: "requested non-existent command",
         interaction: interaction,
       });
-      throw e;
+      return await sendCustomInteractionErrorResponse(bot, interaction);
     }
 
-    await runCommand(bot, interaction);
+    return await runCommand(bot, interaction);
   };

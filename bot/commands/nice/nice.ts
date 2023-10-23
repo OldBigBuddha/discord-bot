@@ -9,12 +9,12 @@ import { Secret } from "@utils/secret";
 import { kv } from "@storage/kv";
 import { RunCommand } from "../type.ts";
 import { commandLogger } from "../logger.ts";
-
+import { sendCustomInteractionErrorResponse } from "../../helpers/errorResponse.ts";
 
 const KEY_NICE = "nice_key" as const;
 const EMBED_COLOR_CODE = 0xff8000 as const;
 
-export const niceLogger = commandLogger.getSubLogger({ name: "nice" });
+const logger = commandLogger.getSubLogger({ name: "nice" });
 
 export const commandInfo: CreateSlashApplicationCommand = {
   name: "nice",
@@ -60,26 +60,34 @@ export const runCommand: RunCommand = async (bot, interaction) => {
   // validation
   const options = interaction.data?.options;
   if (options == null) {
-    const e = new Error("invalid request");
-    niceLogger.error({ error: e });
-    throw e;
+    logger.error({ message: "'options' is undefined", data: interaction.data });
+    return await sendCustomInteractionErrorResponse(bot, interaction);
   }
+
   const target = options[0].value;
   if (target == null || typeof target !== "string") {
-    const e = new Error("no user passed");
-    niceLogger.error({ error: e, target: target });
-    throw e;
+    logger.error({ message: "passed option is not string", options: options });
+    return await sendCustomInteractionErrorResponse(bot, interaction);
   }
 
-  const member = await bot.helpers.getMember(Secret.GUILD_ID, target);
-  const entry = await findEntry<number>([member.id.toString(10)]);
-  const newPoint = entry?.value != null ? entry.value + 1 : 1;
-  await setEntry([member.id], newPoint);
+  try {
+    const member = await bot.helpers.getMember(Secret.GUILD_ID, target);
+    const entry = await findEntry<number>([member.id.toString(10)]);
+    const newPoint = entry?.value != null ? entry.value + 1 : 1;
+    await setEntry([member.id], newPoint);
 
-  await bot.helpers.sendInteractionResponse(interaction.id, interaction.token, {
-    type: InteractionResponseTypes.ChannelMessageWithSource,
-    data: {
-      embeds: [generateEmbed(getUsername(member), newPoint)],
-    },
-  });
+    return await bot.helpers.sendInteractionResponse(
+      interaction.id,
+      interaction.token,
+      {
+        type: InteractionResponseTypes.ChannelMessageWithSource,
+        data: {
+          embeds: [generateEmbed(getUsername(member), newPoint)],
+        },
+      },
+    );
+  } catch (e) {
+    logger.error({ message: "failed to calculate nice point", error: e });
+    return await sendCustomInteractionErrorResponse(bot, interaction);
+  }
 };
