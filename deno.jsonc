@@ -1,8 +1,8 @@
 {
   "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
   "tasks": {
-    "start": "deno run --unstable --allow-env=DENO_ENV,DISCORD_TOKEN,GUILD_ID --allow-read --allow-write=kv.sqlite,kv.sqlite-shm,kv.sqlite-wal --allow-net --allow-sys=hostname ./main.ts",
-    "start:watch": "deno run --watch --unstable --allow-env=DENO_ENV,DISCORD_TOKEN,GUILD_ID --allow-read --allow-write=kv.sqlite,kv.sqlite-shm,kv.sqlite-wal --allow-net --allow-sys=hostname ./main.ts",
+    "start": "deno run --unstable --allow-env --allow-read --allow-write --allow-net --allow-sys=hostname ./main.ts",
+    "start:watch": "deno run --watch --unstable --allow-env --allow-read --allow-write --allow-net --allow-sys=hostname ./main.ts",
   },
   "imports": {
     "@discordeno": "https://deno.land/x/discordeno@18.0.0/mod.ts",
