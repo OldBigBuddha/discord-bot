@@ -1,15 +1,9 @@
-const DENO_DEPLOYMENT_ID = Deno.env.get("DENO_DEPLOYMENT_ID");
+const DENO_ENV = Deno.env.get("DENO_ENV");
 
 /**
- * 本番環境（Deno Deploy）かそうでないかを確認する
- *
- * Deno Deploy はすべての Deployment に対して DENO_DEPLOYMENT_ID という環境変数を提供している。
- * また、Deno Deploy においては DENO_ から始まる環境変数を設定することができない。
- *
- * @see https://docs.deno.com/deploy/manual/environment-variables
- *
+ * 本番環境かそうでないかを確認する
  * @returns 本番環境であれば true
  */
 export function isProduction(): boolean {
-  return DENO_DEPLOYMENT_ID != null;
+  return DENO_ENV === "production";
 }
