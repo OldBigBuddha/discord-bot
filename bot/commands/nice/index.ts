@@ -1,6 +1,7 @@
 import {
   ApplicationCommandOptionTypes,
   Embed,
+  InteractionResponse,
   InteractionResponseTypes,
   Member,
   User,
@@ -21,6 +22,15 @@ function generateEmbed(username: string, point: number): Embed {
     title: "Nice work!",
     description:
       `${username} の nice point が ${point} になりました、やったね！`,
+    color: EMBED_COLOR_CODE,
+  };
+}
+
+function generateHelpEmbed(): Embed {
+  return {
+    title: "/nice の使い方",
+    description:
+      "'/nice <ユーザー>'と入力すると対象のユーザーへ nice point を 1 追加することができます",
     color: EMBED_COLOR_CODE,
   };
 }
@@ -76,6 +86,12 @@ const execute: SlashCommand["execute"] = async (interaction) => {
   }
 };
 
+export const niceHelp: InteractionResponse = {
+  type: InteractionResponseTypes.ChannelMessageWithSource,
+  data: {
+    embeds: [generateHelpEmbed()],
+  },
+};
 export const command: SlashCommand = {
   name: "nice",
   description: "Nice!",
@@ -87,5 +103,5 @@ export const command: SlashCommand = {
       required: true,
     },
   ],
-  execute: execute,
+  execute: execute
 };

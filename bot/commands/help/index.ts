@@ -5,6 +5,7 @@ import {
 import { SlashCommand } from "../type.ts";
 import { commandOptionsParser } from "../commandOptionsParser.ts";
 import { BOT } from "../../bot.ts";
+import { niceHelp } from "../nice/index.ts";
 
 const execute: SlashCommand["execute"] = async (interaction) => {
   const args = commandOptionsParser(interaction);
@@ -26,12 +27,7 @@ const execute: SlashCommand["execute"] = async (interaction) => {
     return await BOT.helpers.sendInteractionResponse(
       interaction.id,
       interaction.token,
-      {
-        type: InteractionResponseTypes.ChannelMessageWithSource,
-        data: {
-          content: "Usage of nice command",
-        },
-      },
+      niceHelp,
     );
   }
 
