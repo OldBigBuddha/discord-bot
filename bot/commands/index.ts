@@ -1,4 +1,4 @@
-import { command as niceCommand } from "./nice/nice.ts";
-import { command as helpCommand } from "./help/help.ts";
+import { command as niceCommand } from "./nice/index.ts";
+import { command as helpCommand } from "./help/index.ts";
 
 export const slashCommands = [niceCommand, helpCommand];

@@ -2,7 +2,7 @@
   "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
   "tasks": {
     "start": "deno run --unstable --allow-env --allow-read --allow-write --allow-net --allow-sys=hostname ./main.ts",
-    "start:watch": "deno run --watch --unstable --allow-env --allow-read --allow-write --allow-net --allow-sys=hostname ./main.ts",
+    "start:watch": "deno run --watch --unstable --allow-env --allow-read --allow-write --allow-net --allow-sys=hostname ./main.ts"
   },
   "imports": {
     "@discordeno": "https://deno.land/x/discordeno@18.0.0/mod.ts",
@@ -11,6 +11,7 @@
     // Path alias
     "@utils/secret": "./utils/secret.ts",
     "@utils/env": "./utils/env.ts",
-    "@storage/kv": "./storage/kv.ts"
+    "@storage/kv": "./storage/kv.ts",
+    "@feature/nice": "./features/nice/index.ts"
   }
 }

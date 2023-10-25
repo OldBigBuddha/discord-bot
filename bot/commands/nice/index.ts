@@ -1,35 +1,20 @@
 import {
   ApplicationCommandOptionTypes,
   Embed,
-  Interaction,
   InteractionResponseTypes,
   Member,
   User,
 } from "@discordeno";
-import { kv } from "@storage/kv";
+import { niceTo } from "@feature/nice";
 import { BOT } from "../../bot.ts";
 import { SlashCommand } from "../type.ts";
 import { commandLogger } from "../logger.ts";
 import { sendCustomInteractionErrorResponse } from "../../helpers/errorResponse.ts";
 import { commandOptionsParser } from "../commandOptionsParser.ts";
 
-const KEY_NICE = "nice_key" as const;
 const EMBED_COLOR_CODE = 0xff8000 as const;
 
 const logger = commandLogger.getSubLogger({ name: "nice" });
-
-async function findEntry<T>(
-  keys: Deno.KvKeyPart[],
-): Promise<Deno.KvEntryMaybe<T> | undefined> {
-  return await kv.get<T>([KEY_NICE, ...keys]);
-}
-
-async function setEntry(
-  keys: Deno.KvKeyPart[],
-  value: unknown,
-): Promise<Deno.KvCommitResult> {
-  return await kv.set([KEY_NICE, ...keys], value);
-}
 
 function generateEmbed(username: string, point: number): Embed {
   return {
@@ -44,18 +29,36 @@ function getName(member: Member, user: User): string {
   return member.nick ?? user.username ?? member.id.toString(10);
 }
 
-// 指しているユーザーは同じだが、得られる情報が違う
-type KudosArgs = {
-  member: Member;
-  user: User;
-};
-async function executeKudos(interaction: Interaction, { user, member }: KudosArgs) {
-  try {
-    const memberId = member.id.toString(10);
-    const entry = await findEntry<number>([memberId]);
-    const newPoint = entry?.value != null ? entry.value + 1 : 1;
+const execute: SlashCommand["execute"] = async (interaction) => {
+  const args = commandOptionsParser(interaction);
 
-    await setEntry([memberId], newPoint);
+  // nice は target 以外を引数に取らない
+  if (args.target == null) {
+    logger.warn({
+      message: "requested non-existance command",
+      interaction: interaction,
+    });
+    return sendCustomInteractionErrorResponse(
+      interaction,
+      "未登録のコマンドです",
+    );
+  }
+
+  // check arguments
+  if (args.target.user == null && args.target.member == null) {
+    logger.error({
+      message: "invalid argments",
+      args: args,
+    });
+    return sendCustomInteractionErrorResponse(interaction);
+  }
+
+  const user = args.target.user as User;
+  const member = args.target.member as Member;
+
+  try {
+    const userId = user.id.toString(10);
+    const newPoint = await niceTo(userId);
 
     return await BOT.helpers.sendInteractionResponse(
       interaction.id,
@@ -71,26 +74,6 @@ async function executeKudos(interaction: Interaction, { user, member }: KudosArg
     logger.error({ message: "failed to calculate nice point", error: e });
     return await sendCustomInteractionErrorResponse(interaction);
   }
-}
-
-const execute: SlashCommand["execute"] = async (interaction) => {
-  const args = commandOptionsParser(interaction);
-
-  if (args.target != null) {
-    return await executeKudos(interaction, {
-      member: args.target.member,
-      user: args.target.user
-    });
-  }
-
-  logger.warn({
-    message: "requested non-existance command",
-    interaction: interaction,
-  });
-  return sendCustomInteractionErrorResponse(
-    interaction,
-    "未登録のコマンドです",
-  );
 };
 
 export const command: SlashCommand = {
@@ -102,7 +85,7 @@ export const command: SlashCommand = {
       name: "target",
       description: "Kudos to who?",
       required: true,
-    }
+    },
   ],
   execute: execute,
 };
