@@ -35,6 +35,9 @@ export const diceHelp: InteractionResponse = {
 const execute: SlashCommand["execute"] = async (interaction) => {
   const { max, quantity } = commandOptionsParser(interaction) as DiceArg;
   const result = dice(max, quantity);
+  const total = result.reduce((prev, v) => {
+    return prev + v;
+  });
 
   return await BOT.helpers.sendInteractionResponse(
     interaction.id,
@@ -42,7 +45,7 @@ const execute: SlashCommand["execute"] = async (interaction) => {
     {
       type: InteractionResponseTypes.ChannelMessageWithSource,
       data: {
-        content: result.join(", "),
+        content: `dice: ${result.join(", ")}\ntotal: ${total}`,
       },
     },
   );
