@@ -12,6 +12,7 @@
     "@utils/secret": "./utils/secret.ts",
     "@utils/env": "./utils/env.ts",
     "@storage/kv": "./storage/kv.ts",
-    "@feature/nice": "./features/nice/index.ts"
+    "@feature/nice": "./features/nice/index.ts",
+    "@feature/dice": "./features/dice/index.ts"
   }
 }

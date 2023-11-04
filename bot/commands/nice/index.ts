@@ -17,12 +17,18 @@ const EMBED_COLOR_CODE = 0xff8000 as const;
 
 const logger = commandLogger.getSubLogger({ name: "nice" });
 
-function generateEmbed(username: string, point: number, message?: string | undefined): Embed {
+function generateEmbed(
+  username: string,
+  point: number,
+  message?: string | undefined,
+): Embed {
   let description: string;
   if (message == null) {
-    description = `${username} の nice point が ${point} になりました、やったね！`
+    description =
+      `${username} の nice point が ${point} になりました、やったね！`;
   } else {
-    description = `${username} の nice point が ${point} になりました、やったね！\nメッセージ: ${message}`;
+    description =
+      `${username} の nice point が ${point} になりました、やったね！\nメッセージ: ${message}`;
   }
   return {
     title: "Nice work!",
@@ -115,5 +121,5 @@ export const command: SlashCommand = {
       required: false,
     },
   ],
-  execute: execute
+  execute: execute,
 };
