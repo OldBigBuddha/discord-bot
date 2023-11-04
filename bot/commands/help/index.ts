@@ -6,6 +6,7 @@ import { SlashCommand } from "../type.ts";
 import { commandOptionsParser } from "../commandOptionsParser.ts";
 import { BOT } from "../../bot.ts";
 import { niceHelp } from "../nice/index.ts";
+import { diceHelp } from "../dice/index.ts";
 
 const execute: SlashCommand["execute"] = async (interaction) => {
   const args = commandOptionsParser(interaction);
@@ -28,6 +29,14 @@ const execute: SlashCommand["execute"] = async (interaction) => {
       interaction.id,
       interaction.token,
       niceHelp,
+    );
+  }
+
+  if (args.dice != null) {
+    return await BOT.helpers.sendInteractionResponse(
+      interaction.id,
+      interaction.token,
+      diceHelp,
     );
   }
 
@@ -57,6 +66,15 @@ export const command: SlashCommand = {
     {
       name: "nice",
       description: "The usage of nice command",
+      type: ApplicationCommandOptionTypes.SubCommand,
+      required: false,
+    },
+    {
+      name: "dice",
+      description: "The usage of dice command",
+      descriptionLocalizations: {
+        ja: "/dice の使い方",
+      },
       type: ApplicationCommandOptionTypes.SubCommand,
       required: false,
     },
