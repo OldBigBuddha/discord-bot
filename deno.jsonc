@@ -6,6 +6,7 @@
   },
   "imports": {
     "@discordeno": "https://deno.land/x/discordeno@18.0.0/mod.ts",
+    "assert": "https://deno.land/std@0.205.0/assert/mod.ts",
     "dotenv": "https://deno.land/std@0.204.0/dotenv/mod.ts",
     "tslog": "npm:tslog@4.9.2",
     // Path alias
