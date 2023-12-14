@@ -1,0 +1,39 @@
+lockfileVersion: '6.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+devDependencies:
+  '@tsconfig/bun':
+    specifier: 1.0.1
+    version: 1.0.1
+  '@tsconfig/strictest':
+    specifier: 2.0.2
+    version: 2.0.2
+  bun-types:
+    specifier: latest
+    version: 1.0.18
+  typescript:
+    specifier: 5.3.3
+    version: 5.3.3
+
+packages:
+
+  /@tsconfig/bun@1.0.1:
+    resolution: {integrity: sha512-WtKtokg1FM8SKWrMbkvXBoO+1uXsBT0IefZivoA8YG0Tvmx7hBkfpog66hpeB1VMj9Gwv1EBp/FZJ8yxD752LA==}
+    dev: true
+
+  /@tsconfig/strictest@2.0.2:
+    resolution: {integrity: sha512-jt4jIsWKvUvuY6adJnQJlb/UR7DdjC8CjHI/OaSQruj2yX9/K6+KOvDt/vD6udqos/FUk5Op66CvYT7TBLYO5Q==}
+    dev: true
+
+  /bun-types@1.0.18:
+    resolution: {integrity: sha512-1XZ7AxOF8oO8FZtw1xj006JAKxEjulK3dUhsktZVN95vXBlsf4NIjQxfistVdpt24v3H2I9BwHp+UU+gXSSpAw==}
+    dev: true
+
+  /typescript@5.3.3:
+    resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+    dev: true
