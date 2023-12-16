@@ -1,7 +1,8 @@
-import { CreateSlashApplicationCommand, Interaction } from "@discordeno";
+import type { CacheType, ChatInputCommandInteraction, SlashCommandBuilder, SlashCommandOptionsOnlyBuilder, SlashCommandSubcommandsOnlyBuilder, } from "discord.js";
 
-export type RunCommand = (interaction: Interaction) => Promise<void>;
+export type SlashCommandHandler = (interaction: ChatInputCommandInteraction<CacheType>) => Promise<void>;
 
-export interface SlashCommand extends CreateSlashApplicationCommand {
-  execute(interactioin: Interaction): Promise<unknown>;
+export interface SlashCommand {
+  readonly metadata: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+  readonly execute: SlashCommandHandler;
 }

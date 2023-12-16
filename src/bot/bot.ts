@@ -2,7 +2,7 @@ import { createBot } from "@discordeno";
 
 import { Secret } from "@utils/secret";
 
-import { slashCommands } from "./commands/index.ts";
+import { slashCommandMap } from "./commands/index.ts";
 import { events } from "./events/index.ts";
 
 export const BOT = createBot({
@@ -11,10 +11,10 @@ export const BOT = createBot({
 });
 
 // コマンド登録
-for (const command of slashCommands) {
+for (const command of slashCommandMap) {
   await BOT.helpers.createGuildApplicationCommand(command, Secret.GUILD_ID);
 }
 await BOT.helpers.upsertGuildApplicationCommands(
   Secret.GUILD_ID,
-  slashCommands,
+  slashCommandMap,
 );
