@@ -1,20 +1,31 @@
-import {Client, Events, GatewayIntentBits} from 'discord.js';
-
-import { slashCommandMap } from './bot/commands';
+import { run } from './bot';
 
 type Env = {
     // readonly NODE_ENV: string;
     readonly DISCORD_TOKEN: string;
+    readonly DISCORD_APPLICATION_ID: string;
+    readonly DISCORD_GUILD_ID: string;
 }
 
 function loadEnv(): Env | undefined {
-    const { DISCORD_TOKEN } = process.env;
-    if (DISCORD_TOKEN === undefined) {
+    const {
+        DISCORD_TOKEN,
+        DISCORD_APPLICATION_ID,
+        DISCORD_GUILD_ID
+    } = process.env;
+
+    if (
+        DISCORD_TOKEN === undefined ||
+        DISCORD_APPLICATION_ID === undefined ||
+        DISCORD_GUILD_ID === undefined
+    ) {
         return undefined;
     }
 
     return {
         DISCORD_TOKEN,
+        DISCORD_APPLICATION_ID,
+        DISCORD_GUILD_ID,
     };
 }
 
@@ -25,40 +36,11 @@ async function main(): Promise<void> {
         process.exit(1);
     }
 
-    const client = new Client({intents: [GatewayIntentBits.Guilds]});
-
-    client.once(Events.ClientReady, (c) => {
-      console.log(`Ready! Logged in as ${c.user.tag}`);
+    await run({
+        token: env.DISCORD_TOKEN,
+        applicationId: env.DISCORD_APPLICATION_ID,
+        guildId: env.DISCORD_GUILD_ID,
     });
-
-    // routing slash commands
-    client.on(Events.InteractionCreate, async (interaction) => {
-        if (interaction.isChatInputCommand() === false) {
-            return;
-        }
-
-        const command = slashCommandMap.get(interaction.commandName);
-        if (command === undefined) {
-            console.error(`No command matching ${interaction.commandName} was found.`);
-            await interaction.reply(`No command matching ${interaction.commandName} was found.`);
-            return;
-        }
-
-        try {
-            await command.execute(interaction);
-        } catch (error) {
-            console.error(error);
-
-            if (interaction.replied || interaction.deferred) {
-                await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
-            } else {
-                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-            }
-    
-        }
-    });
-    
-    await client.login(env.DISCORD_TOKEN);
 }
 
 main();

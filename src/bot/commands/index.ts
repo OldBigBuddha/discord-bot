@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 
-import type { SlashCommand } from "./type.ts";
+import { SlashCommand } from "../type";
 
 const SRC_ROOT = path.join(process.cwd(), "src");
 const COMMANDS_ROOT_DIR_PATH = path.join(SRC_ROOT, "bot", "commands");

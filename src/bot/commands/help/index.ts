@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import type { SlashCommand, SlashCommandHandler } from "../type.ts";
+import type { SlashCommand, SlashCommandHandler } from "../../type.ts";
 // import { commandOptionsParser } from "../commandOptionsParser.ts";
 // import { BOT } from "../../bot.ts";
 // import { niceHelp } from "../nice/index.ts";
